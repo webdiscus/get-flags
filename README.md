@@ -110,7 +110,7 @@ An object with flags, camelCased flags, and positional arguments in the `_` prop
 ## Example CLI
 
 ```bash
-node cli.js build -abc --mode=production --dash-flag=value -f a.js b.js c.js --files d.js -- input.txt
+node cli.js build -abc --mode=prod --dash-flag=value -f a.js b.js --files c.js -- input.txt
 ```
 
 **Parses as:**
@@ -120,10 +120,10 @@ node cli.js build -abc --mode=production --dash-flag=value -f a.js b.js c.js --f
   "a": true,
   "b": true,
   "c": true,
-  "mode": "production",
+  "mode": "prod",
   "dash-flag": "value",
   "dashFlag": "value",
-  "files": ["a.js", "b.js", "c.js", "d.js"],
+  "files": ["a.js", "b.js", "c.js"],
   "_": ["build", "input.txt"]
 }
 ```
