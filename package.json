@@ -1,5 +1,5 @@
 {
-  "name": "get-flags",
+  "name": "flaget",
   "version": "0.0.1",
   "description": "Small and fast CLI flag parser",
   "keywords": [
@@ -10,7 +10,7 @@
     "args"
   ],
   "author": "webdiscus",
-  "repository": "webdiscus/get-flags",
+  "repository": "webdiscus/flaget",
   "license": "ISC",
   "type": "module",
   "main": "./lib/index.cjs",

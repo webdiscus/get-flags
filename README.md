@@ -1,4 +1,4 @@
-# get-flags
+# Flaget
 
 Minimal, fast CLI flag parser for Node.js.  
 Parse command-line arguments into a clean JSON object with support for grouped short flags,
@@ -16,7 +16,7 @@ aliases, multi-value keys, default values, and more.
 ## Install
 
 ```bash
-npm i get-flags
+npm i flaget
 ```
 
 ## Usage
@@ -24,9 +24,9 @@ npm i get-flags
 ### Basic
 
 ```js
-const getFlags = require('get-flags');
+const getFlags = require('flaget');
 // or, in ESM:
-// import getFlags from 'get-flags';
+// import getFlags from 'flaget';
 
 const flags = getFlags();
 // Parses process.argv.slice(2) by default
