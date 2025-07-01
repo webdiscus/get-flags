@@ -1,0 +1,39 @@
+{
+  "name": "get-flags",
+  "version": "0.0.1",
+  "description": "Small and fast CLI flag parser",
+  "keywords": [
+    "cli",
+    "flags",
+    "parser",
+    "command-line",
+    "args"
+  ],
+  "author": "webdiscus",
+  "repository": "webdiscus/get-flags",
+  "license": "ISC",
+  "type": "module",
+  "main": "./lib/index.cjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./lib/index.cjs",
+      "import": "./lib/index.mjs"
+    }
+  },
+  "files": [
+    "lib",
+    "src",
+    "index.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=10"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "vitest": "^3.2.4"
+  }
+}
