@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import getFlags from '../src/getFlags';
+import getFlags from '../src/getFlags.cjs';
 
 describe('getFlags', () => {
   test('parse long flag with value', () => {

@@ -1,6 +1,6 @@
 {
   "name": "flaget",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Small and fast CLI flag parser",
   "keywords": [
     "cli",

@@ -1,4 +1,5 @@
 # Flaget
+![Flaget](docs/flaget-logo.png)
 
 Minimal, fast CLI flag parser for Node.js.
 Parse command-line arguments into a clean JSON object with support for grouped short flags,
