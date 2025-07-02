@@ -1,6 +1,6 @@
 # Flaget
 
-Minimal, fast CLI flag parser for Node.js.  
+Minimal, fast CLI flag parser for Node.js.
 Parse command-line arguments into a clean JSON object with support for grouped short flags,
 aliases, multi-value keys, default values, and more.
 
@@ -71,11 +71,7 @@ console.log(flags);
 
 ---
 
-# API
-
-## getFlags(options?)
-
-### Options
+## Options
 
 | Option     | Type       | Default                  | Description                                                   |
 |------------|------------| ------------------------ |---------------------------------------------------------------|
