@@ -1,18 +1,28 @@
-# Flaget
-![Flaget](docs/flaget-logo.png)
+[![npm](https://img.shields.io/npm/v/flaget?logo=npm&color=brightgreen "npm package")](https://www.npmjs.com/package/ansis "download npm package")
+[![node](https://img.shields.io/node/v/flaget)](https://nodejs.org)
+[![Test](https://github.com/webdiscus/flaget/actions/workflows/test.yml/badge.svg)](https://github.com/webdiscus/flaget/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/webdiscus/flaget/branch/master/graph/badge.svg?token=H7SFJONX1X)](https://codecov.io/gh/webdiscus/flaget)
+[![install size](https://packagephobia.com/badge?p=flaget)](https://packagephobia.com/result?p=flaget)
+
+<h1 align="center">
+  <img width="400" src="docs/logo.png" alt="Flaget">
+</h1>
 
 Minimal, fast CLI flag parser for Node.js.
-Parse command-line arguments into a clean JSON object with support for grouped short flags,
-aliases, multi-value keys, default values, and more.
+Supports all standard CLI flag formats.
 
 ## Features
 
-- Grouped short flags: `-abc`
-- Long flags with values: `--key=value` or `--key value`
-- Short-to-long aliases: `-f` = `--files`
+- Short boolean flag: `-f`
+- Short flag with value: `-f value`
+- Grouped short flags: `-abc` (equivalent to `-a` `-b` `-c`)
+- Long boolean flag: `--flag`
+- Long flag with value: `--key=value` or `--key value`
+- Dashed long flag: `--foo-bar` (available as both `flags['foo-bar']` and `flags.fooBar`)
 - Multi-value keys: `--files a.js b.js`
+- Short-to-long aliases: `-f` = `--files`
+- Positional arguments and `--` terminator: `cmd -a --key=foo file1.txt -- file2.txt`
 - Default values for flags
-- Supports positional arguments and `--` terminator
 
 ## Install
 
@@ -22,6 +32,11 @@ npm i flaget
 
 ## Usage
 
+Example command-line with flags:
+```bash
+> cmd report -abc --type=json --foo-bar value -l 20 -f a.js b.js --files c.js d.js -- out.json
+```
+
 ### Basic
 
 ```js
@@ -30,7 +45,6 @@ const getFlags = require('flaget');
 // import getFlags from 'flaget';
 
 const flags = getFlags();
-// Parses process.argv.slice(2) by default
 console.log(flags);
 ```
 
@@ -38,34 +52,36 @@ console.log(flags);
 
 ```js
 const flags = getFlags({
-  argv: ['build', '-abc', '--mode=production', '--dash-flag=value', '-f', 'a.js', 'b.js', 'c.js', '--files', 'd.js', '--', 'input.txt'],
-  aliases: { f: 'files', m: 'mode' },      // -f = --files, -m = --mode
-  arrays: ['files'],               // collect multiple values for --files and -f
-  defaults: { mode: 'dev', verbose: false } // default values if not set in CLI
+  // argv: process.argv.slice(2), // parses by default
+  aliases: { f: 'files', l: 'limit' }, // -f = --files, -l = --limit
+  arrays: ['files'], // collect multiple values for --files and -f
+  defaults: { type: 'yaml', verbose: false } // default values if not set in CLI
 });
 
 console.log(flags);
 ```
 
-**Result:**
+Result:
 
-```json
+```json5
 {
   "a": true,
   "b": true,
   "c": true,
-  "mode": "production",
-  "dash-flag": "value",
-  "dashFlag": "value",
+  "type": "json",
+  "limit": 20,
+  "foo-bar": "value",
+  "fooBar": "value",
   "files": [
     "a.js",
     "b.js",
     "c.js",
     "d.js"
   ],
+  "verbose": false,
   "_": [
-    "build",
-    "input.txt"
+    "report",
+    "out.json"
   ]
 }
 ```
@@ -81,53 +97,32 @@ console.log(flags);
 | `arrays`   | string[]   | `[]`                     | Keys that should collect multiple values as arrays            |
 | `defaults` | Object     | `{}`                     | Default values for flags, if not set on the CLI               |
 
-### Returns
+**Notes**
 
-An object with flags, camelCased flags, and positional arguments in the `_` property.
-
-## Supported CLI Flag Formats
-
-| CLI Input Example                | Parsed Output Example                         | Notes                                       |
-|----------------------------------|-----------------------------------------------|---------------------------------------------|
-| `-a`                             | `{ a: true }`                                 | Single short flag                           |
-| `-abc`                           | `{ a: true, b: true, c: true }`               | Grouped short flags                         |
-| `--flag`                         | `{ flag: true }`                              | Long flag (boolean)                         |
-| `--key=value`                    | `{ key: 'value' }`                            | Long flag with value                        |
-| `--key value`                    | `{ key: 'value' }`                            | Long flag, value in next argument           |
-| `-f value`                       | `{ f: 'value' }`                              | Short flag with value                       |
-| `--number 42`                    | `{ number: 42 }`                              | Auto-casts numbers                          |
-| `--bool false`                   | `{ bool: false }`                             | Auto-casts booleans                         |
-| `-f a.js b.js`<br>`--files c.js` | `{ f: ['a.js', 'b.js'], files: ['c.js'] }`    | Multi-value keys: groups following values   |
-| `--dash-flag=value`              | `{ 'dash-flag': 'value', dashFlag: 'value' }` | Kebab-case key, also available as camelCase |
-| `--files a.js b.js -- c.js`      | `{ files: ['a.js', 'b.js'], _: ['c.js'] }`    | Arguments after -- are positional           |
-| `input.txt`                      | `{ _: ['input.txt'] }`                        | Positional argument                         |
-| `-f a.js --files b.js`           | `{ f: ['a.js'], files: ['b.js'] }`            | Aliases resolved                            |
+- All dashed keys are also available as camelCase (e.g. `--foo-bar` sets both `foo-bar` and `fooBar`).
+- Use the `aliases` option to map short flags to long names.
+- Specify keys in `arrays` to collect an array of multi-values.
+- Use the `defaults` option for fallback values.
 
 
-## Example CLI
+## Examples
 
-```bash
-node cli.js build -abc --mode=prod --dash-flag=value -f a.js b.js --files c.js -- input.txt
-```
+| CLI Input Example                | Parsed Output Example                          | Notes                                       |
+|----------------------------------|------------------------------------------------|---------------------------------------------|
+| `-a`                             | `{ a: true }`                                  | Single short flag                           |
+| `-abc`                           | `{ a: true, b: true, c: true }`                | Grouped short flags                         |
+| `--flag`                         | `{ flag: true }`                               | Long flag (boolean)                         |
+| `--key=value`                    | `{ key: 'value' }`                             | Long flag with value                        |
+| `--key value`                    | `{ key: 'value' }`                             | Long flag, value in next argument           |
+| `-f value`                       | `{ f: 'value' }`                               | Short flag with value                       |
+| `--number 42`                    | `{ number: 42 }`                               | Auto-casts numbers                          |
+| `--bool false`                   | `{ bool: false }`                              | Auto-casts booleans                         |
+| `-f a.js b.js`<br>`--files c.js` | `{ f: ['a.js', 'b.js'], files: ['c.js'] }`     | Multi-value keys: groups following values   |
+| `--dash-flag=value`              | `{ 'dash-flag': 'value', dashFlag: 'value' }`  | Kebab-case key, also available as camelCase |
+| `--files a.js b.js -- out.json`  | `{ files: ['a.js', 'b.js'], _: ['out.json'] }` | Arguments after -- are positional           |
+| `input.txt`                      | `{ _: ['input.txt'] }`                         | Positional argument                         |
+| `-f a.js --files b.js`           | `{ files: ['a.js', 'b.js'] }`                  | Aliases resolved                            |
 
-**Parses as:**
+## License
 
-```json
-{
-  "a": true,
-  "b": true,
-  "c": true,
-  "mode": "prod",
-  "dash-flag": "value",
-  "dashFlag": "value",
-  "files": ["a.js", "b.js", "c.js"],
-  "_": ["build", "input.txt"]
-}
-```
-
-## Notes
-
-- **CamelCase:** All dashed keys are also available as camelCase (e.g. `--foo-bar` sets both `foo-bar` and `fooBar`).
-- **Aliases:** Use the `aliases` option to map short flags to long names.
-- **Multi-value keys:** Specify in `arrays` to collect an array of values.
-- **Defaults:** Use the `defaults` option for fallback values.
+[ISC](https://github.com/webdiscus/flaget/blob/master/LICENSE)

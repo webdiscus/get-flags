@@ -1,7 +1,7 @@
 {
   "name": "flaget",
-  "version": "0.0.2",
-  "description": "Small and fast CLI flag parser",
+  "version": "0.1.0-alpha.0",
+  "description": "Small, fast CLI flag parser for Node.js, supported all standard CLI flag formats.",
   "keywords": [
     "cli",
     "flags",
@@ -9,32 +9,40 @@
     "command-line",
     "args"
   ],
+  "license": "ISC",
   "author": "webdiscus",
   "repository": "webdiscus/flaget",
-  "license": "ISC",
   "type": "module",
-  "main": "./lib/index.cjs",
-  "exports": {
-    ".": {
-      "types": "./index.d.ts",
-      "require": "./lib/index.cjs",
-      "import": "./lib/index.mjs"
-    }
+  "types": "./index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "postinstall": "npm run build && npm i flaget -D",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "publish:public": "(npm run build) && npm publish ./dist --access public",
+    "publish:beta": "(npm run build) && npm publish ./dist --tag beta"
   },
-  "files": [
-    "lib",
-    "src",
-    "index.d.ts",
-    "LICENSE",
-    "README.md"
-  ],
   "sideEffects": false,
   "engines": {
     "node": ">=10"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
     "@vitest/coverage-v8": "^3.2.4",
+    "flaget": "file:dist",
     "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "rollup": "^4.40.2",
+    "rollup-plugin-copy": "^3.5.0",
+    "terser": "^5.43.1",
     "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "rollup-plugin-copy": {
+      "globby": "^11.0.0"
+    }
   }
 }

@@ -1,0 +1,1 @@
+import e from"./index.cjs";export default e;

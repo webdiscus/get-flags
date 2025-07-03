@@ -1,5 +1,7 @@
 import { describe, test, expect } from 'vitest';
-import getFlags from '../src/getFlags.cjs';
+
+import getFlags from 'flaget'; // test local installed package
+// import getFlags from '../src/getFlags.js'; // test source file only
 
 describe('getFlags', () => {
   test('parse long flag with value', () => {
@@ -140,18 +142,21 @@ describe('getFlags', () => {
   test('use all options', () => {
     // example: cmd --f a.js --file b.js  (alias: f => file), will be parsed latest value
     const result = getFlags({
-      argv: ['build', '-abc', '--mode=production', '--dash-flag=value', '-f', 'a.js', 'b.js', 'c.js', '--files', 'd.js', '--', 'input.txt'],
-      aliases: { f: 'files', m: 'mode' }, // -f = --files, -m = --mode
-      arrays: ['files'], // collect multiple values for --files and -f
-      defaults: { mode: 'dev', verbose: false }, // default values if not set in CLI
+      argv: ['report', '-abc', '--type=json', '--dash-flag', 'value', '--force', '--cached=false', '-l', '20', '-f', 'a.js', 'b.js', '--files', 'c.js', 'd.js', '--', 'out.json'],
+      aliases: { f: 'files', l: 'limit' },
+      arrays: ['files'],
+      defaults: { type: 'yaml', verbose: false },
     });
     expect(result).toEqual({
       'a': true,
       'b': true,
       'c': true,
-      'mode': 'production',
+      'type': 'json',
+      'limit': 20,
       'dash-flag': 'value',
       'dashFlag': 'value',
+      'cached': false,
+      'force': true,
       'files': [
         'a.js',
         'b.js',
@@ -160,8 +165,8 @@ describe('getFlags', () => {
       ],
       'verbose': false,
       '_': [
-        'build',
-        'input.txt',
+        'report',
+        'out.json',
       ],
     });
   });

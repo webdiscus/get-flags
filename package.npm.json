@@ -1,0 +1,29 @@
+{
+  "name": "flaget",
+  "version": "0.1.0-alpha.0",
+  "description": "Small, fast CLI flag parser",
+  "keywords": [
+    "cli",
+    "flags",
+    "parser",
+    "command-line",
+    "args"
+  ],
+  "license": "ISC",
+  "author": "webdiscus",
+  "repository": "webdiscus/flaget",
+  "type": "module",
+  "types": "./index.d.ts",
+  "main": "./index.cjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.cjs",
+      "import": "./index.mjs"
+    }
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=10"
+  }
+}
