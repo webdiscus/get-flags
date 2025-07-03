@@ -9,6 +9,9 @@ export default {
       include: [
         'src/**/*',
       ],
+      exclude: [
+        'src/index.mjs',
+      ]
     },
     server: {
       deps: {

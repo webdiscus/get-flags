@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 
-import getFlags from 'flaget'; // test local installed package
-// import getFlags from '../src/getFlags.js'; // test source file only
+//import getFlags from 'flaget'; // test local installed package
+import getFlags from '../src/getFlags.js'; // test source file for test coverage
 
 describe('getFlags', () => {
   test('parse long flag with value', () => {
