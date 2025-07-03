@@ -136,7 +136,7 @@ const parseShortFlag = (arg, index, context) => {
   const short = arg[1];
   const key = getKey(short, aliases);
   const next = argv[index + 1];
-  const nextIsValue = next && !isFlag(next);
+  const isNextValue = next && !isFlag(next);
 
   if (arrays.includes(key)) {
     const values = [];
@@ -148,7 +148,7 @@ const parseShortFlag = (arg, index, context) => {
     return i;
   }
 
-  const val = nextIsValue ? castValue(argv[++index]) : true;
+  const val = isNextValue ? castValue(argv[++index]) : true;
   setFlag(flags, key, val);
 
   return index;
