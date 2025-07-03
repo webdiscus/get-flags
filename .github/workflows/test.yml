@@ -70,7 +70,7 @@ jobs:
         run: npm install --ignore-scripts
 
       - name: Run tests
-        run: npx vitest
+        run: npx run test:coverage
         env:
           NODE_OPTIONS: --unhandled-rejections=strict
 
