@@ -1,7 +1,7 @@
 [![npm](https://img.shields.io/npm/v/flaget?logo=npm&color=brightgreen "npm package")](https://www.npmjs.com/package/ansis "download npm package")
 [![node](https://img.shields.io/node/v/flaget)](https://nodejs.org)
 [![Test](https://github.com/webdiscus/flaget/actions/workflows/test.yml/badge.svg)](https://github.com/webdiscus/flaget/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/webdiscus/flaget/branch/master/graph/badge.svg?token=H7SFJONX1X)](https://codecov.io/gh/webdiscus/flaget)
+[![codecov](https://codecov.io/gh/webdiscus/flaget/graph/badge.svg?token=ETZKAUG7D3)](https://codecov.io/gh/webdiscus/flaget)
 [![install size](https://packagephobia.com/badge?p=flaget)](https://packagephobia.com/result?p=flaget)
 
 <h1 align="center">
