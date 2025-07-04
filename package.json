@@ -1,12 +1,13 @@
 {
   "name": "flaget",
-  "version": "0.1.0-alpha.0",
-  "description": "Small, fast CLI flag parser for Node.js, supported all standard CLI flag formats.",
+  "version": "1.1.0",
+  "description": "Small CLI flag parser for Node.js supporting all standard flag formats.",
   "keywords": [
     "cli",
-    "flags",
+    "flag",
     "parser",
-    "command-line",
+    "argument",
+    "argv",
     "args"
   ],
   "license": "ISC",

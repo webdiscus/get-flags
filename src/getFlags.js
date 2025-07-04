@@ -48,11 +48,11 @@ const setFlag = (flags, key, value) => {
 /**
  * Map an alias to its full key name if defined.
  * @param {string} key The key or alias to resolve.
- * @param {object} aliases The aliases mapping object.
+ * @param {object} alias The alias mapping object.
  * @returns {string} The resolved key.
  */
-const getKey = (key, aliases) => (
-  aliases[key] || key
+const getKey = (key, alias) => (
+  alias[key] || key
 );
 
 /**
@@ -82,17 +82,17 @@ const readMultiValues = (argv, startIndex, rawVal) => {
  * Parse a long flag argument (e.g., --key or --key=value).
  * @param {string} arg The argument to parse.
  * @param {number} index The current argv index.
- * @param {object} context Parsing context (argv, aliases, arrays, flags).
+ * @param {object} context Parsing context (argv, alias, array, flags).
  * @returns {number} The updated index.
  */
 const parseLongFlag = (arg, index, context) => {
-  const { argv, aliases, arrays, flags } = context;
+  const { argv, alias, array, flags } = context;
   const [rawKey, rawVal] = arg.includes('=')
     ? arg.slice(2).split('=')
     : [arg.slice(2)];
-  const key = getKey(rawKey, aliases);
+  const key = getKey(rawKey, alias);
 
-  if (arrays.includes(key)) {
+  if (array.includes(key)) {
     const { values, argOffset } = readMultiValues(argv, index, rawVal);
     setFlag(flags, key, (flags[key] || []).concat(values));
     return index + argOffset;
@@ -114,12 +114,12 @@ const parseLongFlag = (arg, index, context) => {
 /**
  * Parse grouped short flags (e.g., -abc -> -a -b -c).
  * @param {string} arg The argument to parse.
- * @param {object} context Parsing context (aliases, flags).
+ * @param {object} context Parsing context (alias, flags).
  */
 const parseShortGroup = (arg, context) => {
-  const { aliases, flags } = context;
+  const { alias, flags } = context;
   for (const char of arg.slice(1)) {
-    const key = getKey(char, aliases);
+    const key = getKey(char, alias);
     setFlag(flags, key, true);
   }
 };
@@ -128,17 +128,17 @@ const parseShortGroup = (arg, context) => {
  * Parse a single short flag (e.g., -f or -f value).
  * @param {string} arg The argument to parse.
  * @param {number} index The current argv index.
- * @param {object} context Parsing context (argv, aliases, arrays, flags).
+ * @param {object} context Parsing context (argv, alias, array, flags).
  * @returns {number} The updated index.
  */
 const parseShortFlag = (arg, index, context) => {
-  const { argv, aliases, arrays, flags } = context;
+  const { argv, alias, array, flags } = context;
   const short = arg[1];
-  const key = getKey(short, aliases);
+  const key = getKey(short, alias);
   const next = argv[index + 1];
   const isNextValue = next && !isFlag(next);
 
-  if (arrays.includes(key)) {
+  if (array.includes(key)) {
     const values = [];
     let i = index;
     while (argv[i + 1] && !isFlag(argv[i + 1])) {
@@ -159,19 +159,15 @@ const parseShortFlag = (arg, index, context) => {
  *
  * @param {object} [options] Parsing options.
  * @param {Array} [options.argv=process.argv.slice(2)] The argv array to parse.
- * @param {object} [options.aliases={}] Mapping of flag aliases.
- * @param {Array} [options.arrays=[]] Keys that should always produce arrays.
- * @param {object} [options.defaults={}] Default values for missing flags.
+ * @param {object} [options.alias={}] Mapping of flag alias.
+ * @param {Array} [options.array=[]] Keys that should always produce array.
+ * @param {object} [options.default={}] Default values for missing flags.
  * @returns {object} Parsed flags object.
  */
-const getFlags = ({
-  argv = process.argv.slice(2),
-  aliases = {},
-  arrays = [],
-  defaults = {},
-} = {}) => {
+const getFlags = (options = {}) => {
+  const { argv= process.argv.slice(2), alias= {}, array = []} = options;
   const flags = { _: [] };
-  const context = { argv, aliases, arrays, flags };
+  const context = { argv, alias, array, flags };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -202,7 +198,7 @@ const getFlags = ({
   }
 
   // apply default values for missing flags
-  for (const [key, val] of Object.entries(defaults)) {
+  for (const [key, val] of Object.entries(options.default || {})) {
     if (!(key in flags)) {
       setFlag(flags, key, val);
     }

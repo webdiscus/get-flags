@@ -39,12 +39,13 @@ const terserMinifyOptions = (ecma) => ({
 });
 
 const terserPrettyOptions = (ecma) => ({
-  compress: false, // disables code compression/minification
-  mangle: false, // disables name mangling (shortening)
+  compress: false,
+  mangle: false, // disables name shortening
   format: {
+    comments: false,
     beautify: true, // pretty output (optional, for better readability)
     indent_level: 2, // force 2-space indentation
-  }
+  },
 });
 
 /**
@@ -79,18 +80,17 @@ function removeEmptyLines(input, replacement = '') {
 }
 
 /**
- * Rollup plugin to replace space indents to tabs.
- *
- * @param {number} spacesPerTab Number of spaces per tab (default 2).
- * @return {{name: string, generateBundle(*, *): void}}
+ * Rollup plugin that applies a user transform function to code.
+ * @param {(code: string, file: object) => string} transform A function to transform code.
+ * @returns {import('rollup').Plugin}
  */
-function spacesToTabsPlugin(spacesPerTab = 2) {
+function transform(transform) {
   return {
-    name: 'spaces-to-tabs',
+    name: 'plugin-transform',
     generateBundle(options, bundle) {
       for (const file of Object.values(bundle)) {
-        if (file.type === 'chunk') {
-          file.code = indentSpacesToTabs(file.code, spacesPerTab);
+        if (file.type === 'chunk' && typeof transform === 'function') {
+          file.code = transform(file.code, file);
         }
       }
     }
@@ -125,7 +125,15 @@ function buildConfig({ output, ecma }) {
     plugins: [
       ...(ecma < 2020 ? [babel(babelOptions)] : []),
       terser(terserPrettyOptions(ecma)),
-      spacesToTabsPlugin(),
+      transform((code) => {
+        return indentSpacesToTabs(code, 2)
+          // remove needles destructed variables after terser
+          .replaceAll('argv: argv', 'argv')
+          .replaceAll('alias: alias', 'alias')
+          .replaceAll('array: array', 'array')
+          .replaceAll('flags: flags', 'flags')
+          .replaceAll('argOffset: argOffset', 'argOffset');
+      }),
       copy({
         targets: [
           {

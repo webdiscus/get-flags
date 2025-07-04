@@ -79,7 +79,7 @@ describe('getFlags', () => {
     // example: cmd --tag a b --tag=c
     const result = getFlags({
       argv: ['--tag', 'a', 'b', '--tag=c'],
-      arrays: ['tag'],
+      array: ['tag'],
     });
     expect(result).toEqual({ tag: ['a', 'b', 'c'], _: [] });
   });
@@ -107,7 +107,7 @@ describe('getFlags', () => {
     // example: cmd --f val  (alias: f => foo)
     const result = getFlags({
       argv: ['--f', 'val'],
-      aliases: { f: 'foo' },
+      alias: { f: 'foo' },
     });
     expect(result).toEqual({ foo: 'val', _: [] });
   });
@@ -124,7 +124,7 @@ describe('getFlags', () => {
     // example: cmd --f a.js --file b.js  (alias: f => file), will be parsed latest value
     const result = getFlags({
       argv: ['-f', 'a.js', '--file', 'b.js'],
-      aliases: { f: 'file' },
+      alias: { f: 'file' },
     });
     expect(result).toEqual({ 'file': 'b.js', _: [] });
   });
@@ -133,8 +133,8 @@ describe('getFlags', () => {
     // example: cmd --f a.js --files b.js  (alias: f => files), collects all values
     const result = getFlags({
       argv: ['-f', 'a.js', '--files', 'b.js'],
-      aliases: { f: 'files' },
-      arrays: ['files'],
+      alias: { f: 'files' },
+      array: ['files'],
     });
     expect(result).toEqual({ 'files': ['a.js', 'b.js'], _: [] });
   });
@@ -143,9 +143,9 @@ describe('getFlags', () => {
     // example: cmd --f a.js --file b.js  (alias: f => file), will be parsed latest value
     const result = getFlags({
       argv: ['report', '-abc', '--type=json', '--dash-flag', 'value', '--force', '--cached=false', '-l', '20', '-f', 'a.js', 'b.js', '--files', 'c.js', 'd.js', '--', 'out.json'],
-      aliases: { f: 'files', l: 'limit' },
-      arrays: ['files'],
-      defaults: { type: 'yaml', verbose: false },
+      alias: { f: 'files', l: 'limit' },
+      array: ['files'],
+      default: { type: 'yaml', verbose: false },
     });
     expect(result).toEqual({
       'a': true,
@@ -171,11 +171,11 @@ describe('getFlags', () => {
     });
   });
 
-  test('apply defaults', () => {
+  test('apply default', () => {
     // example: cmd  (env=production by default)
     const result = getFlags({
       argv: [],
-      defaults: { env: 'production' },
+      default: { env: 'production' },
     });
     expect(result).toEqual({ env: 'production', _: [] });
   });

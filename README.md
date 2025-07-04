@@ -19,8 +19,8 @@ Supports all standard CLI flag formats.
 - Long boolean flag: `--flag`
 - Long flag with value: `--key=value` or `--key value`
 - Dashed long flag: `--foo-bar` (available as both `flags['foo-bar']` and `flags.fooBar`)
-- Multi-value keys: `--files a.js b.js`
-- Short-to-long aliases: `-f` = `--files`
+- Multi-values: `--files a.js b.js`
+- Short-to-long alias: `-f` = `--files`
 - Positional arguments and `--` terminator: `cmd -a --key=foo file1.txt -- file2.txt`
 - Default values for flags
 
@@ -53,9 +53,9 @@ console.log(flags);
 ```js
 const flags = getFlags({
   // argv: process.argv.slice(2), // parses by default
-  aliases: { f: 'files', l: 'limit' }, // -f = --files, -l = --limit
-  arrays: ['files'], // collect multiple values for --files and -f
-  defaults: { type: 'yaml', verbose: false } // default values if not set in CLI
+  alias: { f: 'files', l: 'limit' }, // -f = --files, -l = --limit
+  array: ['files'], // collect multiple values for --files and -f
+  default: { type: 'yaml', verbose: false } // default values if not set in CLI
 });
 
 console.log(flags);
@@ -90,19 +90,19 @@ Result:
 
 ## Options
 
-| Option     | Type       | Default                  | Description                                                   |
-|------------|------------| ------------------------ |---------------------------------------------------------------|
-| `argv`     | string[]   | `process.argv.slice(2)`  | Array of CLI arguments to parse                               |
-| `aliases`  | Object     | `{}`                     | Map of short keys to long keys.<br>Example: `{ f: 'files' }`  |
-| `arrays`   | string[]   | `[]`                     | Keys that should collect multiple values as arrays            |
-| `defaults` | Object     | `{}`                     | Default values for flags, if not set on the CLI               |
+| Option     | Type       | Default                  | Description                                                  |
+|------------|------------| ------------------------ |--------------------------------------------------------------|
+| `argv`     | string[]   | `process.argv.slice(2)`  | Array of CLI arguments to parse                              |
+| `alias`    | Object     | `{}`                     | Map of short keys to long keys.<br>Example: `{ f: 'files' }` |
+| `array`    | string[]   | `[]`                     | Keys that should collect multiple values as array            |
+| `default`  | Object     | `{}`                     | Default values for flags, if not set on the CLI              |
 
 **Notes**
 
 - All dashed keys are also available as camelCase (e.g. `--foo-bar` sets both `foo-bar` and `fooBar`).
-- Use the `aliases` option to map short flags to long names.
-- Specify keys in `arrays` to collect an array of multi-values.
-- Use the `defaults` option for fallback values.
+- Use the `alias` option to map short flags to long names.
+- Specify keys in `array` to collect an array of multi-values.
+- Use the `default` option for fallback values.
 
 
 ## Examples

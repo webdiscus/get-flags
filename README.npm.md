@@ -2,7 +2,7 @@
   <img width="400" src="docs/logo.png" alt="Flaget">
 </h1>
 
-Minimal, fast CLI flag parser for Node.js.
+Small and fast CLI flag parser for Node.js.
 Supports all standard CLI flag formats.
 
 ## Features
@@ -13,8 +13,8 @@ Supports all standard CLI flag formats.
 - Long boolean flag: `--flag`
 - Long flag with value: `--key=value` or `--key value`
 - Dashed long flag: `--foo-bar` (available as both `flags['foo-bar']` and `flags.fooBar`)
-- Multi-value keys: `--files a.js b.js`
-- Short-to-long aliases: `-f` = `--files`
+- Multi-values: `--files a.js b.js`
+- Short-to-long alias: `-f` = `--files`
 - Positional arguments and `--` terminator: `cmd -a --key=foo file1.txt -- file2.txt`
 - Default values for flags
 
