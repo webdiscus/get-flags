@@ -107,21 +107,23 @@ Result:
 
 ## Examples
 
-| CLI Input Example                | Parsed Output Example                          | Notes                                       |
-|----------------------------------|------------------------------------------------|---------------------------------------------|
-| `-a`                             | `{ a: true }`                                  | Single short flag                           |
-| `-abc`                           | `{ a: true, b: true, c: true }`                | Grouped short flags                         |
-| `--flag`                         | `{ flag: true }`                               | Long flag (boolean)                         |
-| `--key=value`                    | `{ key: 'value' }`                             | Long flag with value                        |
-| `--key value`                    | `{ key: 'value' }`                             | Long flag, value in next argument           |
-| `-f value`                       | `{ f: 'value' }`                               | Short flag with value                       |
-| `--number 42`                    | `{ number: 42 }`                               | Auto-casts numbers                          |
-| `--bool false`                   | `{ bool: false }`                              | Auto-casts booleans                         |
-| `-f a.js b.js`<br>`--files c.js` | `{ f: ['a.js', 'b.js'], files: ['c.js'] }`     | Multi-value keys: groups following values   |
-| `--dash-flag=value`              | `{ 'dash-flag': 'value', dashFlag: 'value' }`  | Kebab-case key, also available as camelCase |
-| `--files a.js b.js -- out.json`  | `{ files: ['a.js', 'b.js'], _: ['out.json'] }` | Arguments after -- are positional           |
-| `input.txt`                      | `{ _: ['input.txt'] }`                         | Positional argument                         |
-| `-f a.js --files b.js`           | `{ files: ['a.js', 'b.js'] }`                  | Aliases resolved                            |
+| CLI Input Example                        | Parsed Output Example                              | Notes                                       |
+|------------------------------------------|----------------------------------------------------|---------------------------------------------|
+| `-a`                                     | `{ a: true }`                                      | Single short flag                           |
+| `-abc`                                   | `{ a: true, b: true, c: true }`                    | Grouped short flags                         |
+| `--flag`                                 | `{ flag: true }`                                   | Long flag (boolean)                         |
+| `--key=value`                            | `{ key: 'value' }`                                 | Long flag with value                        |
+| `--key value`                            | `{ key: 'value' }`                                 | Long flag, value in next argument           |
+| `-f value`                               | `{ f: 'value' }`                                   | Short flag with value                       |
+| `--number 42`                            | `{ number: 42 }`                                   | Auto-casts numbers                          |
+| `--bool false`                           | `{ bool: false }`                                  | Auto-casts booleans                         |
+| `-f a.js b.js --files c.js`              | `{ f: ['a.js', 'b.js'],`<br>`files: ['c.js'] }`    | Multi-value keys: groups following values   |
+| `--dash-flag=value`                      | `{ 'dash-flag': 'value',`<br>`dashFlag: 'value' }` | Kebab-case key, also available as camelCase |
+| `--files a.js b.js -- out.json`          | `{ files: ['a.js', 'b.js'],`<br>`_: ['out.json'] }`    | Arguments after -- are positional           |
+| `input.txt`                              | `{ _: ['input.txt'] }`                             | Positional argument                         |
+| `-f a.js --files b.js`                   | `{ files: ['a.js', 'b.js'] }`                      | Grouped values for aliases                  |
+| `--key1 "foo bar"`<br>`--key2="baz qux"` | `{ key1: 'foo bar',`<br>`key2: 'baz qux' }`        | Values with spaces                          |
+
 
 ## License
 
