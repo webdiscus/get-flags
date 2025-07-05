@@ -8,7 +8,7 @@
   <img width="400" src="docs/logo.png" alt="Flaget">
 </h1>
 
-Minimal, fast CLI flag parser for Node.js.
+A lightweight CLI argument parser for Node.js.
 Supports all standard CLI flag formats.
 
 ## Features
