@@ -8,21 +8,22 @@
   <img width="400" src="docs/logo.png" alt="Flaget">
 </h1>
 
-A lightweight CLI argument parser for Node.js.
-Supports all standard CLI flag formats.
+A lightweight CLI flag/argument parser for Node.js.\
+Supports all standard CLI flag formats and named positional arguments.
 
 ## Features
 
-- Short boolean flag: `-f`
-- Short flag with value: `-f value`
-- Grouped short flags: `-abc` (equivalent to `-a` `-b` `-c`)
-- Long boolean flag: `--flag`
-- Long flag with value: `--key=value` or `--key value`
-- Dashed long flag: `--foo-bar` (available as both `flags['foo-bar']` and `flags.fooBar`)
-- Multi-values: `--files a.js b.js`
-- Short-to-long alias: `-f` = `--files`
-- Positional arguments and `--` terminator: `cmd -a --key=foo file1.txt -- file2.txt`
-- Default values for flags
+- Short `-f` and long `--flag` flags
+- Grouped short boolean flags `-xyz`
+- Values via `--key=value` or `--key value`
+- Multi-value flags via `array` option
+- Boolean-only flags via `boolean` option
+- Named and variadic (`...rest`) positional arguments via `args` option
+- Short-to-long mapping via `alias` option
+- Auto-casts numbers and booleans from values
+- Default values via `default` option
+- Dashed keys also available as camelCase
+- Captures arguments before and after `--` terminator
 
 ## Install
 
@@ -32,97 +33,269 @@ npm i flaget
 
 ## Usage
 
-Example command-line with flags:
+Example command-line with flags and positional arguments:
 ```bash
-> cmd report -abc --type=json --foo-bar value -l 20 -f a.js b.js --files c.js d.js -- out.json
+> cmd report daily -xz --foo-bar baz --keys foo bar --start=5 -l 20 -- one --two
 ```
 
 ### Basic
 
 ```js
-const getFlags = require('flaget');
+const flaget = require('flaget');
 // or, in ESM:
-// import getFlags from 'flaget';
+// import flaget from 'flaget';
 
-const flags = getFlags();
-console.log(flags);
+const cliParams = flaget();
+console.log(cliParams);
 ```
 
-### With Options
+### With options
 
 ```js
-const flags = getFlags({
-  // argv: process.argv.slice(2), // parses by default
-  alias: { f: 'files', l: 'limit' }, // -f = --files, -l = --limit
-  array: ['files'], // collect multiple values for --files and -f
-  default: { type: 'yaml', verbose: false } // default values if not set in CLI
+const cliParams = flaget({
+  // raw: process.argv.slice(2), // raw argument values (parses by default)
+  args: ['command', 'period'], // named positional arguments
+  alias: { l: 'limit' }, // -l = --limit
+  array: ['keys'], // collect multiple values for --keys
+  default: { limit: 10, verbose: false } // default values if not set in CLI
 });
 
-console.log(flags);
+console.log(cliParams);
 ```
 
 Result:
 
 ```json5
 {
-  "a": true,
-  "b": true,
-  "c": true,
-  "type": "json",
-  "limit": 20,
-  "foo-bar": "value",
-  "fooBar": "value",
-  "files": [
-    "a.js",
-    "b.js",
-    "c.js",
-    "d.js"
-  ],
-  "verbose": false,
-  "_": [
-    "report",
-    "out.json"
-  ]
+  args: { command: 'report', period: 'daily', }, // named positional arguments
+  flags: {
+    x: true,
+    z: true,
+    'foo-bar': 'baz',
+    fooBar: 'baz',
+    keys: ['foo', 'bar'], // collected multiple values
+    start: 5,
+    limit: 20, // long alias to short 'l'
+    verbose: false,
+  },
+  _: ['report', 'daily'], // positional arguments before "--"
+  _tail: ['one', '--two'] // everything after "--"
 }
 ```
 
 ---
 
+## Flag parsing
+
+Flags can behave as booleans, accept a single value, or collect multiple values.
+Their behavior depends on syntax, position, and parser options like `boolean` and `array`.
+
+| Input              | Output                           | Condition                                                   |
+|--------------------|----------------------------------|-------------------------------------------------------------|
+| `--flag` or `-f`   | `{ flag: true }`                 | Next token is absent or starts with `-`                     |
+| `--flag=value`     | `{ flag: 'value' }`              | Always treated as key=value                                 |
+| `--flag value`     | `{ flag: 'value' }`              | Next token is a value and `flag` is not in `boolean` option |
+| `--flag arg`       | `{ flag: true }, _: ['arg']`     | `flag` is in `boolean` option                            |
+| `-xyz`             | `{ x: true, y: true, z: true }`  | Grouped short flags, always booleans                        |
+| `--flag val1 val2` | `{ flag: ['val1', 'val2'] }`     | `flag` is in `array` option                              |
+
+
 ## Options
 
-| Option     | Type       | Default                  | Description                                                  |
-|------------|------------| ------------------------ |--------------------------------------------------------------|
-| `argv`     | string[]   | `process.argv.slice(2)`  | Array of CLI arguments to parse                              |
-| `alias`    | Object     | `{}`                     | Map of short keys to long keys.<br>Example: `{ f: 'files' }` |
-| `array`    | string[]   | `[]`                     | Keys that should collect multiple values as array            |
-| `default`  | Object     | `{}`                     | Default values for flags, if not set on the CLI              |
+The function accepts an optional configuration object to customize the parsing behavior. These options control how flags, positional arguments, aliases, arrays, and defaults are handled.
 
-**Notes**
+| Option     | Type       | Default                 | Description                                                                                                                                                                                                            |
+|------------|------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `raw`      | string[]   | `process.argv.slice(2)` | The input raw CLI argument array to parse.<br>Defaults passed as `process.argv.slice(2)`.                                                                                                                              |
+| `args`     | string[]   | `[]`                    | List of named positional arguments. Values are assigned in order. Supports a variadic last argument with the `...name` syntax to collect all remaining positional arguments into a single key, before terminator `--`. |
+| `alias`    | Object     | `{}`                    | Mapping of short flag keys to long keys. For example, `{ f: 'files' }` will map `-f` to `--files`.                                                                                                                     |
+| `array`    | string[]   | `[]`                    | List of flag keys that should collect multiple values into arrays. Values are collected until the next flag, terminator `--` or the end of input.                                                                      |
+| `boolean`  | string[]   | `[]`                    | List of flag keys that should always be parsed as booleans. These flags never consume a value, even if the next argument looks like one.                                                                               |
+| `default`  | Object     | `{}`                    | Map of default values for flags that are not provided on the CLI.                                                                                                                                                      |
 
-- All dashed keys are also available as camelCase (e.g. `--foo-bar` sets both `foo-bar` and `fooBar`).
-- Use the `alias` option to map short flags to long names.
-- Specify keys in `array` to collect an array of multi-values.
-- Use the `default` option for fallback values.
+
+## Return
+
+The function returns an object containing the parsed command-line arguments, separated into flags,
+positional arguments, and any arguments following a `--` terminator.
+Named positional arguments are mapped into the `args` object.
+
+| Property  | Type     | Description                                                               |
+|-----------|----------|---------------------------------------------------------------------------|
+| `args`    | Object   | Object with named positional arguments based on `args` option.            |
+| `flags`   | Object   | Object containing all parsed flags, including aliases and camelCase keys. |
+| `_`       | string[] | Positional arguments before the `--` terminator.                          |
+| `_tail`   | string[] | Arguments after the `--` terminator (unparsed, passed as-is).             |
 
 
 ## Examples
 
-| CLI Input Example                        | Parsed Output Example                              | Notes                                       |
-|------------------------------------------|----------------------------------------------------|---------------------------------------------|
-| `-a`                                     | `{ a: true }`                                      | Single short flag                           |
-| `-abc`                                   | `{ a: true, b: true, c: true }`                    | Grouped short flags                         |
-| `--flag`                                 | `{ flag: true }`                                   | Long flag (boolean)                         |
-| `--key=value`                            | `{ key: 'value' }`                                 | Long flag with value                        |
-| `--key value`                            | `{ key: 'value' }`                                 | Long flag, value in next argument           |
-| `-f value`                               | `{ f: 'value' }`                                   | Short flag with value                       |
-| `--number 42`                            | `{ number: 42 }`                                   | Auto-casts numbers                          |
-| `--bool false`                           | `{ bool: false }`                                  | Auto-casts booleans                         |
-| `-f a.js b.js --files c.js`              | `{ f: ['a.js', 'b.js'],`<br>`files: ['c.js'] }`    | Multi-value keys: groups following values   |
-| `--dash-flag=value`                      | `{ 'dash-flag': 'value',`<br>`dashFlag: 'value' }` | Kebab-case key, also available as camelCase |
-| `--files a.js b.js -- out.json`          | `{ files: ['a.js', 'b.js'],`<br>`_: ['out.json'] }`    | Arguments after -- are positional           |
-| `input.txt`                              | `{ _: ['input.txt'] }`                             | Positional argument                         |
-| `-f a.js --files b.js`                   | `{ files: ['a.js', 'b.js'] }`                      | Grouped values for aliases                  |
-| `--key1 "foo bar"`<br>`--key2="baz qux"` | `{ key1: 'foo bar',`<br>`key2: 'baz qux' }`        | Values with spaces                          |
+### Option `args`
+
+Named positional arguments with variadic `...files`.
+
+```bash
+$ convert.js mp3 --bitrate 128 file1.wav file2.wav
+```
+
+```js
+const cliParams = flaget({
+  args: ['format', '...files'],
+});
+
+console.log(cliParams);
+```
+
+Output:
+
+```json5
+{
+  args: { format: 'mp3', files: ['file1.wav', 'file2.wav'] },
+  flags: { bitrate: 128 },
+  _: ['mp3', 'file1.wav', 'file2.wav'],
+  _tail: []
+}
+```
+
+### Option `alias`
+
+Short to long flag mapping.
+
+```bash
+$ cli.js -f log.txt
+```
+
+```js
+const cliParams = flaget({
+  alias: { f: 'file' }
+});
+
+console.log(cliParams);
+```
+
+Output:
+
+```json5
+{
+  args: {},
+  flags: { file: 'log.txt' },
+  _: [],
+  _tail: []
+}
+```
+
+### Option `array`
+
+Collect multiple values.
+
+```bash
+$ cli.js --keys x y z
+```
+
+```js
+const cliParams = flaget({
+  array: ['keys']
+});
+
+console.log(cliParams);
+```
+
+Output:
+
+```json5
+{
+  args: {},
+  flags: { keys: ['x', 'y', 'z'] },
+  _: [],
+  _tail: []
+}
+```
+
+### Option `boolean`
+
+Prevent consuming next value.
+
+```bash
+$ cli.js --debug input.txt
+```
+
+```js
+const cliParams = flaget({
+  boolean: ['debug']
+});
+
+console.log(cliParams);
+```
+
+Output:
+
+```json5
+{
+  args: {},
+  flags: { debug: true },
+  _: ['input.txt'],
+  _tail: []
+}
+
+```
+
+### Option `default`
+
+Set fallback values for missing flags.
+
+```bash
+$ cli.js
+```
+
+```js
+const cliParams = flaget({
+  default: { verbose: false, port: 8080 }
+});
+
+console.log(cliParams);
+```
+
+Output:
+
+```json5
+{
+  args: {},
+  flags: { verbose: false, port: 8080 },
+  _: [],
+  _tail: []
+}
+```
+
+### Mixed flags, positional args, and tail
+
+```bash
+$ cli.js push --verbose origin main -- --dry-run --no-cache
+```
+
+```js
+const cliParams = flaget({
+  args: ['command', '...targets'],
+  boolean: ['verbose'],
+});
+
+console.log(cliParams);
+```
+
+Output:
+
+```json5
+{
+  args: {
+    command: 'push',
+    targets: ['origin', 'main'],
+  },
+  flags: {
+    verbose: true
+  },
+  _: ['push', 'origin', 'main'],
+  _tail: ['--dry-run', '--no-cache']
+}
+```
 
 
 ## License
