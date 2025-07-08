@@ -2,20 +2,21 @@
   <img width="400" src="docs/logo.png" alt="Flaget">
 </h1>
 
-Small and fast CLI flag parser for Node.js.
+Tiny CLI flag/argument parser.
 Supports all standard CLI flag formats.
 
 ## Features
 
-- Short boolean flag: `-f`
-- Short flag with value: `-f value`
-- Grouped short flags: `-abc` (equivalent to `-a` `-b` `-c`)
-- Long boolean flag: `--flag`
-- Long flag with value: `--key=value` or `--key value`
-- Dashed long flag: `--foo-bar` (available as both `flags['foo-bar']` and `flags.fooBar`)
-- Multi-values: `--files a.js b.js`
-- Short-to-long alias: `-f` = `--files`
-- Positional arguments and `--` terminator: `cmd -a --key=foo file1.txt -- file2.txt`
-- Default values for flags
+- Short `-f` and long `--flag` flags
+- Grouped short boolean flags `-xyz`
+- Values via `--key=value` or `--key value`
+- Multi-value flags via `array` option
+- Boolean-only flags via `boolean` option
+- Named and variadic (`...rest`) positional arguments via `args` option
+- Short-to-long mapping via `alias` option
+- Auto-casts numbers and booleans from values
+- Default values via `default` option
+- Dashed keys also available as camelCase
+- Captures arguments before and after `--` terminator
 
 See [full documentation](https://github.com/webdiscus/flaget).

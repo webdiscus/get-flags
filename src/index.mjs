@@ -1,4 +1,4 @@
 // ESM wrapper
-import a from './getFlags.js';
+import a from './index.js';
 
 export default a;

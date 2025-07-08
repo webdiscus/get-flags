@@ -113,7 +113,7 @@ function clean(content) {
 
 function buildConfig({ output, ecma }) {
   return {
-    input: 'src/getFlags.js',
+    input: 'src/index.js',
     output: {
       file: `${output}/index.cjs`,
       format: 'cjs',
@@ -128,11 +128,12 @@ function buildConfig({ output, ecma }) {
       transform((code) => {
         return indentSpacesToTabs(code, 2)
           // remove needles destructed variables after terser
-          .replaceAll('argv: argv', 'argv')
+          .replaceAll('raw: raw', 'raw')
+          .replaceAll('values: values', 'values')
           .replaceAll('alias: alias', 'alias')
           .replaceAll('array: array', 'array')
           .replaceAll('flags: flags', 'flags')
-          .replaceAll('argOffset: argOffset', 'argOffset');
+          .replaceAll('offset: offset', 'offset');
       }),
       copy({
         targets: [
@@ -142,7 +143,7 @@ function buildConfig({ output, ecma }) {
             transform: async (contents) => (
               await minify(
                 // transform the extension of the source file to output .cjs (it will be compiled to CommonJS)
-                contents.toString().replace('getFlags.js', 'index.cjs'),
+                contents.toString().replace('index.js', 'index.cjs'),
                 terserMinifyOptions(ecma)
               )
             ).code,

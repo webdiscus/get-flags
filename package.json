@@ -1,12 +1,13 @@
 {
   "name": "flaget",
-  "version": "1.1.0",
-  "description": "Small CLI flag parser for Node.js supporting all standard flag formats.",
+  "version": "2.0.0",
+  "description": "A lightweight CLI flag/argument parser for Node.js. Supports all standard flag formats and named positional arguments.",
   "keywords": [
     "cli",
     "flag",
-    "parser",
     "argument",
+    "positional",
+    "parser",
     "argv",
     "args"
   ],
@@ -19,6 +20,7 @@
     "build": "rollup -c",
     "postinstall": "npm run build && npm i flaget -D",
     "test": "vitest run",
+    "test:package": "TEST_PACKAGE=true vitest run",
     "test:coverage": "vitest run --coverage",
     "publish:public": "(npm run build) && npm publish ./dist --access public",
     "publish:beta": "(npm run build) && npm publish ./dist --tag beta"
