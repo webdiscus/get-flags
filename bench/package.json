@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "benchmark": "2.1.4",
+    "flaget2": "file:../dist",
+    "flaget": "2.1.0",
+    "minimist": "1.2.8",
+    "mri": "1.2.0",
+    "nopt": "8.1.0",
+    "yargs-parser": "22.0.0"
+  }
+}

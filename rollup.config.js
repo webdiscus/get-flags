@@ -80,6 +80,79 @@ function removeEmptyLines(input, replacement = '') {
 }
 
 /**
+ * Minifies JavaScript code by removing unnecessary spaces around operators and punctuation,
+ * while preserving original indentation, line breaks, and string literals.
+ * Assumes all comments have already been removed.
+ *
+ * Note: If you're debugging the npm package directly in `node_modules`, you can use any IDE
+ * to reformat the code and restore all original spacing for easier readability.
+ *
+ * @param {string} code - The JavaScript source code to minify.
+ * @returns {string} - The minified code with preserved structure and formatting.
+ */
+function minifySpaces(code) {
+  let out = '';
+  let inString = false;
+  let stringChar = '';
+  let escape = false;
+
+  for (let i = 0; i < code.length; i++) {
+    const char = code[i];
+    const next = code[i + 1];
+
+    // handle strings
+    if (inString) {
+      out += char;
+      if (escape) {
+        escape = false;
+      } else if (char === '\\') {
+        escape = true;
+      } else if (char === stringChar) {
+        inString = false;
+      }
+      continue;
+    }
+
+    // detect string start
+    if (char === '"' || char === "'" || char === '`') {
+      inString = true;
+      stringChar = char;
+      out += char;
+      continue;
+    }
+
+    // remove spaces before/after these symbols
+    const isSpace = char === ' ';
+    const isSymbol = /[=+\-*/%<>!?:;,()[\]{}|&^~]/;
+
+    if (isSpace) {
+      const prev = out[out.length - 1];
+      if (isSymbol.test(prev) || isSymbol.test(next)) {
+        continue;
+      }
+    }
+
+    out += char;
+  }
+
+  return out;
+}
+
+/**
+ * Clean d.ts file content.
+ *
+ * @param {string} content
+ * @return {string}
+ */
+function clean(content) {
+  let out = removeComments(content);
+  out = removeEmptyLines(out);
+  out = indentSpacesToTabs(out);
+
+  return out;
+}
+
+/**
  * Rollup plugin that applies a user transform function to code.
  * @param {(code: string, file: object) => string} transform A function to transform code.
  * @returns {import('rollup').Plugin}
@@ -97,20 +170,6 @@ function transform(transform) {
   }
 }
 
-/**
- * Clean d.ts file content.
- *
- * @param {string} content
- * @return {string}
- */
-function clean(content) {
-  let out = removeComments(content);
-  out = removeEmptyLines(out);
-  out = indentSpacesToTabs(out);
-
-  return out;
-}
-
 function buildConfig({ output, ecma }) {
   return {
     input: 'src/index.js',
@@ -126,7 +185,7 @@ function buildConfig({ output, ecma }) {
       ...(ecma < 2020 ? [babel(babelOptions)] : []),
       terser(terserPrettyOptions(ecma)),
       transform((code) => {
-        return indentSpacesToTabs(code, 2)
+        code = indentSpacesToTabs(code, 2)
           // remove needles destructed variables after terser
           .replaceAll('raw: raw', 'raw')
           .replaceAll('values: values', 'values')
@@ -134,6 +193,8 @@ function buildConfig({ output, ecma }) {
           .replaceAll('array: array', 'array')
           .replaceAll('flags: flags', 'flags')
           .replaceAll('offset: offset', 'offset');
+
+        return minifySpaces(code);
       }),
       copy({
         targets: [

@@ -5,6 +5,6 @@ else console.log(':: Test source');
 
 const modulePath = usePackage
   ? 'flaget' // compiled build
-  : '../src/index.js'; // source for coverage
+  : '../../src/index.js'; // source for coverage
 
 export default (await import(modulePath)).default;

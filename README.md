@@ -17,6 +17,7 @@ Supports all standard CLI flag formats and named positional arguments.
 - Grouped short boolean flags `-xyz`
 - Values via `--key=value` or `--key value`
 - Multi-value flags via `array` option
+- Negated flags `--no-color`
 - Boolean-only flags via `boolean` option
 - Named and variadic (`...rest`) positional arguments via `args` option
 - Short-to-long mapping via `alias` option
@@ -90,14 +91,15 @@ Result:
 Flags can behave as booleans, accept a single value, or collect multiple values.
 Their behavior depends on syntax, position, and parser options like `boolean` and `array`.
 
-| Input              | Output                           | Condition                                                   |
-|--------------------|----------------------------------|-------------------------------------------------------------|
-| `--flag` or `-f`   | `{ flag: true }`                 | Next token is absent or starts with `-`                     |
-| `--flag=value`     | `{ flag: 'value' }`              | Always treated as key=value                                 |
-| `--flag value`     | `{ flag: 'value' }`              | Next token is a value and `flag` is not in `boolean` option |
-| `--flag arg`       | `{ flag: true }, _: ['arg']`     | `flag` is in `boolean` option                            |
-| `-xyz`             | `{ x: true, y: true, z: true }`  | Grouped short flags, always booleans                        |
-| `--flag val1 val2` | `{ flag: ['val1', 'val2'] }`     | `flag` is in `array` option                              |
+| Input              | Output                          | Condition                                                   |
+|--------------------|---------------------------------|-------------------------------------------------------------|
+| `--flag` or `-f`   | `{ flag: true }`                | Next token is absent or starts with `-`                     |
+| `--flag=value`     | `{ flag: 'value' }`             | Always treated as key=value                                 |
+| `--flag value`     | `{ flag: 'value' }`             | Next token is a value and `flag` is not in `boolean` option |
+| `--flag arg`       | `{ flag: true }, _: ['arg']`    | `flag` is in `boolean` option                               |
+| `-xyz`             | `{ x: true, y: true, z: true }` | Grouped short flags, always `true`                          |
+| `--no-flag`        | `{ flag: false }`               | Negated flag, always `false`                                |
+| `--flag val1 val2` | `{ flag: ['val1', 'val2'] }`    | `flag` is in `array` option                                 |
 
 
 ## Options

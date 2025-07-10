@@ -11,6 +11,7 @@ Supports all standard CLI flag formats.
 - Grouped short boolean flags `-xyz`
 - Values via `--key=value` or `--key value`
 - Multi-value flags via `array` option
+- Negated flags `--no-color`
 - Boolean-only flags via `boolean` option
 - Named and variadic (`...rest`) positional arguments via `args` option
 - Short-to-long mapping via `alias` option

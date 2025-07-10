@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
-import { splitCli } from './testHelpers.js'
+import { splitCli } from './utils/helpers.js';
 
-import flaget from './testLoader.js';
+import flaget from './utils/testLoader.js';
 
 describe('flaget - flags', () => {
   test('parse long flag with value', () => {
@@ -10,10 +10,10 @@ describe('flaget - flags', () => {
     expect(cliParams).toEqual({ args: {}, flags: { name: 'value' }, _: [], _tail: [] });
   });
 
-  test('parse long flag with value2', () => {
-    const cli = '--name value';
+  test('parse negative flags', () => {
+    const cli = '--no-foo';
     const cliParams = flaget({ raw: cli.split(' ') });
-    expect(cliParams).toEqual({ args: {}, flags: { name: 'value' }, _: [], _tail: [] });
+    expect(cliParams).toEqual({ args: {}, flags: { foo: false }, _: [], _tail: [] });
   });
 
   test('parse long flag with equals', () => {
@@ -152,7 +152,7 @@ describe('flaget - flags', () => {
     });
   });
 
-  test('use alias', () => {
+  test('use alias for long key', () => {
     const cli = '--f val';
     const cliParams = flaget({ raw: cli.split(' '), alias: { f: 'foo' } });
     expect(cliParams).toEqual({

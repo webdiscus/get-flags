@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.0 (20225-07-11)
+
+- feat: add support negated flags with prefix `--no-`, e.g. `--no-color` -> `{ color: false }`
+- feat: add support both CommonJS and ESM
+- feat: add support TypeScript
+- feat: add support TSC, compatible with `module: "Node16"`
+- feat: reduce unpacked package size
+
 ## 2.0.0 (20225-07-08)
 
 - feat(BREAKING CHANGE): optimized structure of return object with parsed elements\

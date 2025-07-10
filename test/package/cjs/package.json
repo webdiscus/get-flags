@@ -1,0 +1,5 @@
+{
+  "name": "package-cjs",
+  "description": "CommonJS version",
+  "type": "commonjs"
+}

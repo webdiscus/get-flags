@@ -1,8 +1,7 @@
 import { describe, test, expect } from 'vitest';
-import { splitCli } from './testHelpers.js'
+import { splitCli } from './utils/helpers.js';
 
-//import flaget from 'flaget'; // test local installed package
-import flaget from '../src/index.js'; // test source file for test coverage
+import flaget from './utils/testLoader.js';
 
 describe('flaget - positional arguments only', () => {
   test('parses named positional arguments with variadic', () => {

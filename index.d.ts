@@ -18,10 +18,10 @@ declare function flaget(options?: {
   boolean?: string[];
   default?: Record<string, unknown>;
 }): {
-  args: Record<string, string | undefined | Array<string>>;
-  flags: Record<string, string | number | boolean | Array<string | number | boolean>>;
+  args: Record<string, string | string[] | undefined>;
+  flags: Record<string, string | number | boolean | (string | number | boolean)[]>;
   _: string[];
   _tail: string[];
 };
 
-export = flaget;
+export default flaget;
