@@ -1,6 +1,6 @@
 {
   "name": "flaget",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A lightweight CLI flag/argument parser for Node.js. Supports all standard flag formats and named positional arguments.",
   "keywords": [
     "cli",

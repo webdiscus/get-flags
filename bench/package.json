@@ -1,8 +1,10 @@
 {
+  "scripts": {
+    "start": "node index.js"
+  },
   "devDependencies": {
     "benchmark": "2.1.4",
-    "flaget2": "file:../dist",
-    "flaget": "2.1.0",
+    "flaget": "file:../dist",
     "minimist": "1.2.8",
     "mri": "1.2.0",
     "nopt": "8.1.0",

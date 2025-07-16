@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.1 (20225-07-12)
+
+- chore: improve performance
+- chore: reduce unpacked package size
+
 ## 2.1.0 (20225-07-11)
 
 - feat: add support negated flags with prefix `--no-`, e.g. `--no-color` -> `{ color: false }`

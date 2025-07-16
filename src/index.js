@@ -30,7 +30,7 @@ const cast = (val) => {
 };
 
 /**
- * Assign a flag val to both original and camelCase keys.
+ * Assign a flag value to both original and camelCase keys.
  * @param {{flags: Object<string, any>}} res The result object containing the `flags` property.
  * @param {string} key The original flag key.
  * @param {any} val The value to assign to the flag.
@@ -66,7 +66,7 @@ const getArray = (raw, i, val) => {
   }
 
   // offset is difference between current index "j" and start index "i"
-  return { values, offset: j - i };
+  return { values, offset: j - i};
 };
 
 /**
@@ -99,41 +99,36 @@ const flaget = (options = {}) => {
    * @returns {number} The updated index.
    */
   const parseLong = (arg, i) => {
-    // performance optimized:
-    // 1) using indexOf + slice is ~10% faster than split('=')
-    // 2) splitting first, then slicing is ~30% faster than slicing first, then splitting
-    //let [rawKey, rawVal] = arg.split('='); // 10% slower, but 50 bytes smaller
-    let j = arg.indexOf('=');
-    let [rawKey, rawVal] = ~j ? [arg.slice(0, j), arg.slice(++j)] : [arg];
+      // performance optimized:
+      // 1) using indexOf + slice is ~10% faster than split('=')
+      // 2) splitting first, then slicing is ~30% faster than slicing first, then splitting
+      //let [rawKey, rawVal] = arg.split('='); // 10% slower, but 50 bytes smaller
+      let j = arg.indexOf('=');
+      let isNo = arg.startsWith('--no-');
+      let key = arg.slice(isNo ? 5 : 2, ~j ? j : void 0);
+      let val = ~j ? arg.slice(++j) : null;
 
-    let isNo = rawKey.startsWith('--no-');
-    let key = rawKey.slice(isNo ? 5 : 2);
-    key = alias[key] || key;
+      key = alias[key] || key;
 
-    // negated or boolean flag
-    if (isNo || boolean.includes(key)) {
-      setFlag(res, key, !isNo);
+      // negated or boolean flag
+      if (isNo || boolean.includes(key)) {
+        setFlag(res, key, !isNo);
+        return i;
+      }
+
+      // flag with muli-value
+      if (array.includes(key)) {
+        let { values, offset } = getArray(raw, i, val);
+        setFlag(res, key, (res.flags[key] || []).concat(values));
+        return i + offset;
+      }
+
+      val = val != null ? cast(val) : isArg(raw, i) ? cast(raw[++i]) : true;
+
+      setFlag(res, key, val);
+
       return i;
-    }
-
-    // flag with muli-value
-    if (array.includes(key)) {
-      let { values, offset } = getArray(raw, i, rawVal);
-      setFlag(res, key, (res.flags[key] || []).concat(values));
-      return i + offset;
-    }
-
-    let val = true;
-    if (rawVal != null) {
-      val = cast(rawVal);
-    } else if (isArg(raw, i)) {
-      val = cast(raw[++i]);
-    }
-
-    setFlag(res, key, val);
-
-    return i;
-  };
+    };
 
   /**
    * Parse short CLI flags (-a, -abc, -f value).

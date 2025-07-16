@@ -19,7 +19,7 @@ const mri = require('mri');
 console.timeEnd('mri');
 
 console.time('flaget');
-const flaget = require('flaget2');
+const flaget = require('flaget');
 console.timeEnd('flaget');
 
 console.log('\nBenchmark:');

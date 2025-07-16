@@ -13,6 +13,7 @@ Supports all standard CLI flag formats and named positional arguments.
 
 ## Features
 
+- Supports ESM, CommonJS, TypeScript
 - Short `-f` and long `--flag` flags
 - Grouped short boolean flags `-xyz`
 - Values via `--key=value` or `--key value`
